@@ -429,16 +429,36 @@ async function startScanner(){
 
 }
 
-window.addEventListener(
+document.body.addEventListener(
 
-  'load',
+  'click',
 
-  ()=>{
+  async()=>{
 
-    startScanner();
+    if(!scannerRunning){
 
-  }
+      try{
 
+        await beep.play();
+
+        beep.pause();
+
+        beep.currentTime = 0;
+
+      }catch(e){}
+
+      startScanner();
+
+    }
+
+  },
+
+  { once:true }
+
+);
+
+setStatus(
+  'Klikni kamkoliv pro spuštění kamery'
 );
 </script>
 </body>
