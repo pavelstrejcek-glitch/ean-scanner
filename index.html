@@ -235,23 +235,6 @@ button:active{
 
   </div>
 
-  <div class="buttons">
-
-    <button class="primary"
-            onclick="startScanner()">
-
-      📷 Spustit kameru
-
-    </button>
-
-    <button class="secondary"
-            onclick="stopScanner()">
-
-      ⏹ Zastavit kameru
-
-    </button>
-
-  </div>
 
   <div class="footer">
     Mobile Barcode Scanner
@@ -446,30 +429,17 @@ async function startScanner(){
 
 }
 
-async function stopScanner(){
+window.addEventListener(
 
-  try{
+  'load',
 
-    if(html5QrCode && scannerRunning){
+  ()=>{
 
-      await html5QrCode.stop();
-
-      scannerRunning = false;
-
-      setStatus(
-        'Kamera zastavena'
-      );
-
-    }
-
-  }catch(e){
-
-    console.error(e);
+    startScanner();
 
   }
 
-}
-
+);
 </script>
 </body>
 </html>
