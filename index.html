@@ -265,21 +265,8 @@ const beep = new Audio(
   'https://actions.google.com/sounds/v1/alarms/beep_short.ogg'
 );
 
-function strongVibrate(){
-
-  if(navigator.vibrate){
-
-    navigator.vibrate([
-      300,
-      120,
-      300,
-      120,
-      500
-    ]);
-
-  }
-
-}
+beep.preload = 'auto';
+beep.volume = 1;
 
 function setStatus(text,type='normal'){
 
@@ -309,6 +296,12 @@ async function startScanner(){
   try{
 
     scannerRunning = true;
+
+    try{
+      await beep.play();
+      beep.pause();
+      beep.currentTime = 0;
+    }catch(e){}
 
     setStatus('Spouštím kameru...');
 
@@ -349,11 +342,29 @@ async function startScanner(){
           document.getElementById('result')
             .innerText = decodedText;
 
-          strongVibrate();
+          if(navigator.vibrate){
 
-          beep.currentTime = 0;
+            navigator.vibrate([
+              500,
+              150,
+              500,
+              150,
+              800
+            ]);
 
-          beep.play();
+          }
+
+          try{
+
+            beep.currentTime = 0;
+
+            await beep.play();
+
+          }catch(e){
+
+            console.log(e);
+
+          }
 
           setStatus('Ukládám do tabulky...');
 
