@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="cs">
 
 <head>
@@ -253,7 +254,7 @@ button:active{
 <script>
 
 const API_URL =
-'https://script.google.com/macros/s/AKfycbzFx_ztPkFEEG8jDZ4zt_4YhcDZqhiOEq2pR7dOO8LHjynNScgRNre7Waou7BGD4XMgDg/exec';
+'https://script.google.com/macros/s/AKfycbwhLqPTnRs7WkMi6yKS0ls4VEu2wSDf52vzv2TnpePsexAUHV_tYpNy22nt7he2-LyZDQ/exec';
 
 let html5QrCode;
 let scannerRunning = false;
@@ -298,9 +299,11 @@ async function startScanner(){
     scannerRunning = true;
 
     try{
+
       await beep.play();
       beep.pause();
       beep.currentTime = 0;
+
     }catch(e){}
 
     setStatus('Spouštím kameru...');
@@ -370,17 +373,21 @@ async function startScanner(){
 
           try{
 
+            const formData =
+              new FormData();
+
+            formData.append(
+              'code',
+              decodedText
+            );
+
             await fetch(API_URL,{
 
               method:'POST',
 
-              headers:{
-                'Content-Type':'application/json'
-              },
+              body:formData,
 
-              body:JSON.stringify({
-                code:decodedText
-              })
+              mode:'no-cors'
 
             });
 
@@ -456,6 +463,5 @@ async function stopScanner(){
 }
 
 </script>
-
 </body>
 </html>
