@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="cs">
 
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>EAN Scanner</title>
 
@@ -18,74 +18,170 @@
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet">
+
 <style>
 
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
   margin:0;
   padding:20px;
-  font-family:Arial,sans-serif;
-  background:#f4f7fb;
+  font-family:'Inter',sans-serif;
+  background:
+    linear-gradient(180deg,#0f172a 0%,#111827 100%);
+  color:white;
+  min-height:100vh;
+}
+
+.container{
+  width:100%;
+  max-width:520px;
+  margin:auto;
+}
+
+.header{
   text-align:center;
-  color:#222;
+  margin-bottom:24px;
+}
+
+.logo{
+  width:72px;
+  height:72px;
+  margin:auto;
+  border-radius:22px;
+  background:
+    linear-gradient(135deg,#2563eb,#00c6ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  box-shadow:
+    0 10px 30px rgba(37,99,235,0.35);
 }
 
 h1{
-  margin-top:10px;
-  margin-bottom:20px;
-  font-size:32px;
+  margin:18px 0 6px;
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:-1px;
+}
+
+.subtitle{
+  color:#94a3b8;
+  font-size:15px;
 }
 
 #reader{
-  width:100%;
-  max-width:500px;
-  margin:auto;
   overflow:hidden;
-  border-radius:20px;
+  border-radius:28px;
   background:black;
-  box-shadow:0 5px 20px rgba(0,0,0,0.2);
+  border:2px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.45);
 }
 
 .card{
-  background:white;
-  margin:20px auto 0;
-  padding:20px;
-  border-radius:20px;
-  max-width:500px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.08);
+  margin-top:22px;
+  background:
+    rgba(255,255,255,0.06);
+  border:
+    1px solid rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+}
+
+.label{
+  color:#94a3b8;
+  font-size:14px;
+  margin-bottom:10px;
 }
 
 #result{
-  font-size:24px;
-  font-weight:bold;
-  color:#0066ff;
-  margin-top:10px;
+  font-size:28px;
+  font-weight:800;
+  color:#38bdf8;
   word-break:break-all;
+  letter-spacing:-0.5px;
 }
 
-#status{
-  margin-top:15px;
-  color:#555;
+.status{
+  margin-top:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color:#cbd5e1;
+  font-size:14px;
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:
+    0 0 12px #22c55e;
+}
+
+.buttons{
+  margin-top:22px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 
 button{
-  margin-top:20px;
-  background:#0066ff;
-  color:white;
-  border:none;
-  border-radius:14px;
-  padding:14px 24px;
-  font-size:18px;
-  cursor:pointer;
   width:100%;
-  max-width:500px;
+  border:none;
+  border-radius:18px;
+  padding:18px 22px;
+  font-size:17px;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.2s;
 }
 
 button:active{
   transform:scale(0.98);
+}
+
+.primary{
+  background:
+    linear-gradient(135deg,#2563eb,#00c6ff);
+  color:white;
+  box-shadow:
+    0 10px 25px rgba(37,99,235,0.35);
+}
+
+.secondary{
+  background:
+    rgba(255,255,255,0.08);
+  color:white;
+  border:
+    1px solid rgba(255,255,255,0.08);
+}
+
+.footer{
+  margin-top:24px;
+  text-align:center;
+  color:#64748b;
+  font-size:13px;
+}
+
+.success{
+  color:#22c55e !important;
+}
+
+.error{
+  color:#ef4444 !important;
 }
 
 </style>
@@ -94,25 +190,69 @@ button:active{
 
 <body>
 
-<h1>EAN Scanner</h1>
+<div class="container">
 
-<div id="reader"></div>
+  <div class="header">
 
-<div class="card">
+    <div class="logo">
+      📦
+    </div>
 
-  <div>Načtený kód:</div>
+    <h1>EAN Scanner</h1>
 
-  <div id="result">---</div>
+    <div class="subtitle">
+      Skenování EAN / EAN128 do Google Sheets
+    </div>
 
-  <div id="status">
-    Připraveno
+  </div>
+
+  <div id="reader"></div>
+
+  <div class="card">
+
+    <div class="label">
+      Poslední načtený kód
+    </div>
+
+    <div id="result">
+      ---
+    </div>
+
+    <div class="status" id="statusWrap">
+
+      <div class="dot"></div>
+
+      <div id="status">
+        Připraveno ke skenování
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="buttons">
+
+    <button class="primary"
+            onclick="startScanner()">
+
+      📷 Spustit kameru
+
+    </button>
+
+    <button class="secondary"
+            onclick="stopScanner()">
+
+      ⏹ Zastavit kameru
+
+    </button>
+
+  </div>
+
+  <div class="footer">
+    Mobile Barcode Scanner
   </div>
 
 </div>
-
-<button onclick="startScanner()">
-  Spustit kameru
-</button>
 
 <script>
 
@@ -120,9 +260,33 @@ const API_URL =
 'https://script.google.com/macros/s/AKfycbzFx_ztPkFEEG8jDZ4zt_4YhcDZqhiOEq2pR7dOO8LHjynNScgRNre7Waou7BGD4XMgDg/exec';
 
 let html5QrCode;
+let scannerRunning = false;
+
 let lastCode = '';
 let lastScan = 0;
-let scannerRunning = false;
+
+const beep = new Audio(
+  'https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'
+);
+
+function setStatus(text,type='normal'){
+
+  const status =
+    document.getElementById('status');
+
+  status.innerText = text;
+
+  status.className = '';
+
+  if(type === 'success'){
+    status.classList.add('success');
+  }
+
+  if(type === 'error'){
+    status.classList.add('error');
+  }
+
+}
 
 async function startScanner(){
 
@@ -134,8 +298,7 @@ async function startScanner(){
 
     scannerRunning = true;
 
-    document.getElementById('status').innerText =
-      'Spouštím kameru...';
+    setStatus('Spouštím kameru...');
 
     html5QrCode =
       new Html5Qrcode("reader");
@@ -143,17 +306,19 @@ async function startScanner(){
     await html5QrCode.start(
 
       {
-        facingMode: {
-          exact: "environment"
+        facingMode:{
+          exact:"environment"
         }
       },
 
       {
         fps:10,
+
         qrbox:{
           width:280,
           height:140
         },
+
         aspectRatio:1.7778
       },
 
@@ -163,7 +328,7 @@ async function startScanner(){
 
         if(
           decodedText !== lastCode ||
-          now - lastScan > 3000
+          now - lastScan > 5000
         ){
 
           lastCode = decodedText;
@@ -172,10 +337,12 @@ async function startScanner(){
           document.getElementById('result')
             .innerText = decodedText;
 
-          document.getElementById('status')
-            .innerText = 'Ukládám...';
-
           navigator.vibrate?.(200);
+
+          beep.currentTime = 0;
+          beep.play();
+
+          setStatus('Ukládám...', 'normal');
 
           try{
 
@@ -193,13 +360,19 @@ async function startScanner(){
 
             });
 
-            document.getElementById('status')
-              .innerText = 'Uloženo ✔';
+            setStatus(
+              'Uloženo do tabulky ✔',
+              'success'
+            );
 
           }catch(e){
 
-            document.getElementById('status')
-              .innerText = 'Chyba zápisu';
+            console.error(e);
+
+            setStatus(
+              'Chyba zápisu',
+              'error'
+            );
 
           }
 
@@ -209,8 +382,10 @@ async function startScanner(){
 
     );
 
-    document.getElementById('status')
-      .innerText = 'Kamera spuštěna';
+    setStatus(
+      'Kamera spuštěna',
+      'success'
+    );
 
   }catch(e){
 
@@ -218,14 +393,39 @@ async function startScanner(){
 
     scannerRunning = false;
 
-    document.getElementById('status')
-      .innerText = 'Chyba kamery';
+    setStatus(
+      'Chyba kamery',
+      'error'
+    );
 
     alert(
-      'Kamera byla zablokována nebo není dostupná.\n\n' +
-      'Na iPhone otevři stránku přímo v Safari.\n' +
-      'Potom povol kameru.'
+      'Nepodařilo se otevřít kameru.\n\n' +
+      'Na iPhone otevři aplikaci v Safari a povol kameru.'
     );
+
+  }
+
+}
+
+async function stopScanner(){
+
+  try{
+
+    if(html5QrCode && scannerRunning){
+
+      await html5QrCode.stop();
+
+      scannerRunning = false;
+
+      setStatus(
+        'Kamera zastavena'
+      );
+
+    }
+
+  }catch(e){
+
+    console.error(e);
 
   }
 
