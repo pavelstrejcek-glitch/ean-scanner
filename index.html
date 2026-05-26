@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>EAN Scanner</title>
+
+<meta name="apple-mobile-web-app-capable"
+      content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  padding:20px;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  text-align:center;
+  color:#222;
+}
+
+h1{
+  margin-top:10px;
+  margin-bottom:20px;
+  font-size:32px;
+}
+
+#reader{
+  width:100%;
+  max-width:500px;
+  margin:auto;
+  overflow:hidden;
+  border-radius:20px;
+  background:black;
+  box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+.card{
+  background:white;
+  margin:20px auto 0;
+  padding:20px;
+  border-radius:20px;
+  max-width:500px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+#result{
+  font-size:24px;
+  font-weight:bold;
+  color:#0066ff;
+  margin-top:10px;
+  word-break:break-all;
+}
+
+#status{
+  margin-top:15px;
+  color:#555;
+}
+
+button{
+  margin-top:20px;
+  background:#0066ff;
+  color:white;
+  border:none;
+  border-radius:14px;
+  padding:14px 24px;
+  font-size:18px;
+  cursor:pointer;
+  width:100%;
+  max-width:500px;
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>EAN Scanner</h1>
+
+<div id="reader"></div>
+
+<div class="card">
+
+  <div>Načtený kód:</div>
+
+  <div id="result">---</div>
+
+  <div id="status">
+    Připraveno
+  </div>
+
+</div>
+
+<button onclick="startScanner()">
+  Spustit kameru
+</button>
+
+<script>
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbzFx_ztPkFEEG8jDZ4zt_4YhcDZqhiOEq2pR7dOO8LHjynNScgRNre7Waou7BGD4XMgDg/exec';
+
+let html5QrCode;
+let lastCode = '';
+let lastScan = 0;
+let scannerRunning = false;
+
+async function startScanner(){
+
+  if(scannerRunning){
+    return;
+  }
+
+  try{
+
+    scannerRunning = true;
+
+    document.getElementById('status').innerText =
+      'Spouštím kameru...';
+
+    html5QrCode =
+      new Html5Qrcode("reader");
+
+    await html5QrCode.start(
+
+      {
+        facingMode: {
+          exact: "environment"
+        }
+      },
+
+      {
+        fps:10,
+        qrbox:{
+          width:280,
+          height:140
+        },
+        aspectRatio:1.7778
+      },
+
+      async(decodedText)=>{
+
+        const now = Date.now();
+
+        if(
+          decodedText !== lastCode ||
+          now - lastScan > 3000
+        ){
+
+          lastCode = decodedText;
+          lastScan = now;
+
+          document.getElementById('result')
+            .innerText = decodedText;
+
+          document.getElementById('status')
+            .innerText = 'Ukládám...';
+
+          navigator.vibrate?.(200);
+
+          try{
+
+            await fetch(API_URL,{
+
+              method:'POST',
+
+              headers:{
+                'Content-Type':'application/json'
+              },
+
+              body:JSON.stringify({
+                code:decodedText
+              })
+
+            });
+
+            document.getElementById('status')
+              .innerText = 'Uloženo ✔';
+
+          }catch(e){
+
+            document.getElementById('status')
+              .innerText = 'Chyba zápisu';
+
+          }
+
+        }
+
+      }
+
+    );
+
+    document.getElementById('status')
+      .innerText = 'Kamera spuštěna';
+
+  }catch(e){
+
+    console.error(e);
+
+    scannerRunning = false;
+
+    document.getElementById('status')
+      .innerText = 'Chyba kamery';
+
+    alert(
+      'Kamera byla zablokována nebo není dostupná.\n\n' +
+      'Na iPhone otevři stránku přímo v Safari.\n' +
+      'Potom povol kameru.'
+    );
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
